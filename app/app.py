@@ -4,9 +4,10 @@ from helpers import apology
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-db = sqlite3.connect('book.db')
+db = sqlite3.connect('book.db', check_same_thread=False)
 app = Flask(__name__)
 
+app.secret_key = 'your_secret_key'
 
 @app.route('/')
 def index():
@@ -28,14 +29,16 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        rows = db.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
+        result = rows.fetchall()
+        print(result)
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+        if len(result) != 1 or not check_password_hash(result[0][1], request.form.get("password")):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = result[0][0]
         # Redirect user to home page
         return redirect("/")
     # User reached route via GET (as by clicking a link or via redirect)
@@ -74,9 +77,10 @@ def register():
         else:
             return apology("Password don't match", 400)
         hash = generate_password_hash(request.form.get("password"))
-        if len(db.execute("SELECT * FROM users WHERE username = ?", username)) == 0:
+        rows = db.execute("SELECT * FROM users WHERE username = ?", (username,))
+        if len(rows.fetchall()) == 0:
             username = request.form.get("username")
-            db.execute("INSERT INTO users (username, user_password) VALUES(?, ?)", username, hash)
+            db.execute("INSERT INTO users (username, user_password) VALUES(?, ?)", (username, hash,))
             return redirect("/")
         else:
             return apology("Usename already exists. Enter a new username!!", 400)
