@@ -87,5 +87,8 @@ def register():
     else:
         return render_template("register.html")
 
+@app.route("/confirm", methods=["GET", "POST"])
+def confirm():
+    return render_template("confirm.html", price=100)
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
