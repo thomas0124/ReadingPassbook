@@ -1,23 +1,46 @@
+/* body {
+  background-image: url("book.jpg");
+  /* background-size: cover; 
+  background-position: center; 
+} */
+
 /* Size for brand */
-nav .navbar-brand
-{
-    font-size: xx-large;
+nav .navbar-brand {
+  font-size: xx-large;
 }
 
 /* Colors for brand */
-nav .navbar-brand .blue
-{
-    color: #537fbe;
+nav .navbar-brand .blue {
+  color: #6687e6;
 }
-nav .navbar-brand .red
-{
-    color: #ea433b;
+nav .navbar-brand .red {
+  color: #ea433b;
 }
-nav .navbar-brand .yellow
-{
-    color: #f5b82e;
+nav .navbar-brand .yellow {
+  color: #f5b82e;
 }
-nav .navbar-brand .green
-{
-    color: #2e944b;
+nav .navbar-brand .green {
+  color: #2e944b;
+}
+
+.sum_prices {
+  margin-top: 50px;
+  margin-bottom: 20px; /* 余白を追加 */
+}
+
+.btn--orange,
+a.btn--orange {
+  color: #fff;
+  background-color: #6687e6;
+  padding: 10px 20px;
+  margin-top: 20px;
+}
+.btn--orange:hover,
+a.btn--orange:hover {
+  color: #fff;
+  background: #4864b5;
+}
+
+a.btn--radius {
+  border-radius: 100vh;
 }
