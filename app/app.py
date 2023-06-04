@@ -8,13 +8,16 @@ from pyzbar import pyzbar
 import requests
 
 db = sqlite3.connect('book.db', check_same_thread=False)
+db.execute("PRAGMA foreign_keys = ON")
 app = Flask(__name__)
 
 app.secret_key = 'your_secret_key'
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    user_id = session['user_id']
+    price = db.execute("SELECT SUM(price) FROM books WHERE user_id = ?", (user_id,))
+    return render_template("index.html", price=price.fetchall()[0][0])
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,7 +40,7 @@ def login():
         print(result)
 
         # Ensure username exists and password is correct
-        if len(result) != 1 or not check_password_hash(result[0][1], request.form.get("password")):
+        if len(result) != 1 or not check_password_hash(result[0][2], request.form.get("password")):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
@@ -83,7 +86,8 @@ def register():
         rows = db.execute("SELECT * FROM users WHERE username = ?", (username,))
         if len(rows.fetchall()) == 0:
             username = request.form.get("username")
-            db.execute("INSERT INTO users (username, user_password) VALUES(?, ?)", (username, hash,))
+            db.execute("INSERT INTO users (username, password) VALUES(?, ?)", (username, hash,))
+            db.commit()
             return redirect("/")
         else:
             return apology("Usename already exists. Enter a new username!!", 400)
@@ -93,6 +97,9 @@ def register():
 
 @app.route("/confirm", methods=["GET", "POST"])
 def confirm():
+    if 'user_id' not in session:
+        return redirect("/")
+    user_id = session['user_id']
     if request.method == 'POST':
         file = request.files['file']
         image_filename = file.filename
@@ -110,9 +117,9 @@ def confirm():
                 print(f"価格: {price}円")
         else:
             print("バーコードが検出されませんでした。")
-
+        db.execute("INSERT INTO books (title, price, user_id) VALUES (?, ?, ?)", (name, price, user_id,))
+        db.commit()
         return render_template("confirm.html", image_filename=image_filename, item_price=price, item_name=name)
-
     else:
         return render_template("confirm.html", item_price=None, item_name=None)
 
