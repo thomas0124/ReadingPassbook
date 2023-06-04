@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'ReadingPassbook'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DA81669B25354C4A998330DC7F4B79E7 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DAB3490C2D104FA99A943A7B0595B1B9 }}
