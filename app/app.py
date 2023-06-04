@@ -2,7 +2,10 @@ from flask import Flask, render_template, request, redirect, session
 import sqlite3
 from helpers import apology
 from werkzeug.security import check_password_hash, generate_password_hash
-
+import os
+import cv2
+from pyzbar import pyzbar
+import requests
 
 db = sqlite3.connect('book.db', check_same_thread=False)
 app = Flask(__name__)
@@ -87,8 +90,70 @@ def register():
     else:
         return render_template("register.html")
 
+
 @app.route("/confirm", methods=["GET", "POST"])
 def confirm():
-    return render_template("confirm.html", price=100)
+    if request.method == 'POST':
+        file = request.files['file']
+        image_filename = file.filename
+        file.save(os.path.join('./static/image', image_filename))
+        image_path = os.path.join('./static/image', image_filename)
+
+        # バーコードを読み取る
+        barcodes = read_barcode(image_path)
+
+        if len(barcodes) > 0:
+            for barcode in barcodes:
+                # 本の価格を取得する
+                price = get_book_price(barcode)
+                print(f"価格: {price}円")
+        else:
+            print("バーコードが検出されませんでした。")
+
+        return render_template("confirm.html", image_filename=image_filename, item_price=price)
+
+    else:
+        return render_template("confirm.html", item_price=None)
+
+def read_barcode(image_path):
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    barcodes = pyzbar.decode(gray)
+
+    barcode_data = []
+    for barcode in barcodes:
+        barcode_data.append(barcode.data.decode('utf-8'))
+
+    return barcode_data
+
+def get_book_price(barcode):
+    # 楽天商品検索API (BooksGenre/Search/)のURL
+    url = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706"
+
+    # URLのパラメータ
+    params = {
+        # 取得したアプリIDを設定する
+        "applicationId" : "1044852592706171326",
+        "keyword" : barcode,
+        "format" : "json"
+    }
+
+    # APIを実行して結果を取得する
+    result = requests.get(url, params=params)
+
+    # jsonにデコードする
+    json_result = result.json()
+
+    # 結果から本の価格を取得する
+    if "Items" in json_result and len(json_result["Items"]) > 0:
+        item = json_result["Items"][0]["Item"]
+        item_name = item["itemName"]
+        item_price = item["itemPrice"]
+        return item_price
+    else:
+        return "本の情報が見つかりませんでした。"
+
+
 if __name__ == '__main__':
     app.run(port=8000, debug=True)

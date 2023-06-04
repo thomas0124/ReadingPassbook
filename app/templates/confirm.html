@@ -1,7 +1,22 @@
 {% extends "layout.html" %} {% block title %} Your Account {% endblock %} {%
-    block main %}
-    <body>
-    <h1> {{ price }} </h1>
-    <p> Your account has been created. </p>
-    </body>
+block main %}
+<body>
+  <form action="/confirm" method="POST" enctype="multipart/form-data">
+    <h1>ファイルのアップロード</h1>
+    <input type="file" name="file" />
+    <input type="submit" value="アップロード" />
+  </form>
+
+  {% if image_filename %}
+  <h2>アップロードした画像:</h2>
+  <img
+    src="{{ url_for('static', filename='image/' + image_filename) }}"
+    alt="Uploaded Image"
+    style="max-width: 300px; max-height: 300px"
+  />
+  {% endif %} {% if item_price %}
+  <h2>本の価格:</h2>
+  <p>{{ item_price }}円</p>
+  {% endif %}
+</body>
 {% endblock %}
