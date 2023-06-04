@@ -4,6 +4,16 @@
   background-position: center; 
 } */
 
+body h1,
+h2 {
+  color: #1d1b16;
+}
+
+title {
+  font-size: 18px;
+  padding: 0 10px;
+}
+
 /* Size for brand */
 nav .navbar-brand {
   font-size: xx-large;
@@ -43,4 +53,9 @@ a.btn--orange:hover {
 
 a.btn--radius {
   border-radius: 100vh;
+}
+
+.spacer {
+  height: 20px; /* 空白の高さ */
+  margin-bottom: 20px; /* 空白の下方向のマージン */
 }
