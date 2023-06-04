@@ -15,6 +15,8 @@ app.secret_key = 'your_secret_key'
 
 @app.route('/')
 def index():
+    if 'user_id' not in session:
+        return render_template("index.html", price=0)
     user_id = session['user_id']
     price = db.execute("SELECT SUM(price) FROM books WHERE user_id = ?", (user_id,))
     return render_template("index.html", price=price.fetchall()[0][0])
