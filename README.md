@@ -22,9 +22,11 @@ $ flask run
 # 使様スタック
 - Python
 - Flask
+- OpenCV
 - SQLite3
 - Docker
-
+# 使用したAPI
+- 楽天API
 # コーディング規則
 
 ### ブランチ名
