@@ -104,16 +104,17 @@ def confirm():
 
         if len(barcodes) > 0:
             for barcode in barcodes:
-                # 本の価格を取得する
-                price = get_book_price(barcode)
+                # 本の価格と名前を取得する
+                price, name = get_book_price(barcode)
+                print(f"名前: {name}")
                 print(f"価格: {price}円")
         else:
             print("バーコードが検出されませんでした。")
 
-        return render_template("confirm.html", image_filename=image_filename, item_price=price)
+        return render_template("confirm.html", image_filename=image_filename, item_price=price, item_name=name)
 
     else:
-        return render_template("confirm.html", item_price=None)
+        return render_template("confirm.html", item_price=None, item_name=None)
 
 def read_barcode(image_path):
     img = cv2.imread(image_path)
@@ -145,14 +146,14 @@ def get_book_price(barcode):
     # jsonにデコードする
     json_result = result.json()
 
-    # 結果から本の価格を取得する
+    # 結果から本の情報を取得する
     if "Items" in json_result and len(json_result["Items"]) > 0:
         item = json_result["Items"][0]["Item"]
         item_name = item["itemName"]
         item_price = item["itemPrice"]
-        return item_price
+        return item_price, item_name
     else:
-        return "本の情報が見つかりませんでした。"
+        return None, None
 
 
 if __name__ == '__main__':

@@ -2,21 +2,29 @@
 block main %}
 <body>
   <form action="/confirm" method="POST" enctype="multipart/form-data">
-    <h1>ファイルのアップロード</h1>
+    <h1 style="font-size: 20px">ファイルのアップロード</h1>
+    <div class="spacer"></div>
     <input type="file" name="file" />
     <input type="submit" value="アップロード" />
   </form>
 
+  <div class="spacer"></div>
+
   {% if image_filename %}
-  <h2>アップロードした画像:</h2>
+  <h2 style="font-size: 15px">アップロードした画像：</h2>
   <img
     src="{{ url_for('static', filename='image/' + image_filename) }}"
     alt="Uploaded Image"
     style="max-width: 300px; max-height: 300px"
   />
   {% endif %} {% if item_price %}
-  <h2>本の価格:</h2>
-  <p>{{ item_price }}円</p>
+  <div class="spacer"></div>
+  <!-- <h2 style="font-size: 15px">本の価格:</h2> -->
+  <!-- <p style="font-size: 18px">{{ item_name }}</p> -->
+  <p style="font-size: 12px; word-wrap: break-word; white-space: pre-wrap">
+    {{ item_name }}
+  </p>
+  <p style="font-size: 24px">価格：{{ item_price }}円</p>
   {% endif %}
 </body>
 {% endblock %}
